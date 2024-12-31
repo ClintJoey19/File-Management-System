@@ -9,7 +9,6 @@ generator client {
 
 enum UserRoles {
   user
-  manager
   admin
 }
 
@@ -27,7 +26,7 @@ model User {
   // Optional for WebAuthn support
   Authenticator Authenticator[]
   workspaces Workspace[]
-  uploads File[]
+  files File[]
   comments Comment[]
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
@@ -125,11 +124,24 @@ model WorkspaceMembers {
   updatedAt DateTime @updatedAt
 }
 
+enum MimeType {
+  folder
+  docs
+  spreadsheet
+  pdf
+  txt
+  image
+  video
+  audio
+  archive
+}
+
 model File {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String
-  description String?
-  fileUrl     String
+  fileUrl     String?
+  mimeType MimeType
+  parentId String? @db.ObjectId
   workspaceId String @db.ObjectId
   uploadedBy String @db.ObjectId
 
@@ -145,6 +157,7 @@ model Comment {
   userId String @db.ObjectId
   content String
   isEdited Boolean @default(false)
+  parentId String? @db.ObjectId
   
   user User @relation(fields: [userId], references: [id])
 
